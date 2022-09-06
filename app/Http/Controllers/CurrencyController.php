@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CurrencyStoreRequest;
+use App\Http\Requests\CurrencyUpdateRequest;
 use App\Models\User;
 use App\Models\Currency;
 use Illuminate\Http\Request;
@@ -70,7 +71,16 @@ class CurrencyController extends Controller
      */
     public function edit($id)
     {
-        //
+        $currencyAll = Currency::all();
+        $currency_user = User::find(Auth::user()->id)->currencies()->get();
+        $selected_currencies = [];
+        $currency = Currency::find($id);
+        
+        foreach($currency_user as $cur)
+            {
+            $selected_currencies[] = $cur->id;
+            }
+        return view('currency.edit',compact('currency','currencyAll','selected_currencies'));
     }
 
     /**
@@ -80,9 +90,13 @@ class CurrencyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CurrencyUpdateRequest $request)
     {
-        //
+        $user = User::find(Auth::user()->id);
+        $currency_id = $request->input('currency_id');
+        $user->currencies()->sync($currency_id);
+       
+        return redirect()->route('currency.index')->with('success',' Currencies updated!');
     }
 
     /**
