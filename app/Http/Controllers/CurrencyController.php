@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CurrencyStoreRequest;
-use App\Http\Requests\CurrencyUpdateRequest;
 use App\Models\User;
 use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use App\Http\Requests\CurrencyStoreRequest;
+use App\Http\Requests\CurrencyUpdateRequest;
 
 class CurrencyController extends Controller
 {
@@ -60,7 +61,13 @@ class CurrencyController extends Controller
      */
     public function show($id)
     {
-        //
+        $currency = Currency::find($id);
+        $url = 'http://api.nbp.pl/api/exchangerates/rates/A/' . $currency['code'] .'/';
+        
+        $response = json_decode(Http::get($url), true);
+        $data = $response['rates'];
+
+        return view('currency.show', compact('currency','data'));
     }
 
     /**
@@ -75,7 +82,7 @@ class CurrencyController extends Controller
         $currency_user = User::find(Auth::user()->id)->currencies()->get();
         $selected_currencies = [];
         $currency = Currency::find($id);
-        
+              
         foreach($currency_user as $cur)
             {
             $selected_currencies[] = $cur->id;
