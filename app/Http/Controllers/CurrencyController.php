@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CurrencyStoreRequest;
 use App\Models\User;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,7 +29,11 @@ class CurrencyController extends Controller
      */
     public function create()
     {
-        //
+        $currencyAll = Currency::all();
+        
+        $currency = User::first()->currencies()->get();
+                
+        return view('currency.create', compact('currency','currencyAll'));
     }
 
     /**
@@ -36,9 +42,13 @@ class CurrencyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CurrencyStoreRequest $request)
     {
-        //
+        $user = User::find(Auth::user()->id);
+        $currency_id = $request->input('currency_id');
+        $user->currencies()->toggle($currency_id);
+       
+        return redirect()->route('currency.index')->with('success',' Currencies added!');
     }
 
     /**
