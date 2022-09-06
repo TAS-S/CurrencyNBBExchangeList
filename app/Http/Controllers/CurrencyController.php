@@ -105,8 +105,10 @@ class CurrencyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Currency $currency)
     {
-        //
+        $currency->delete();
+       
+        return redirect()->route('currency.index')->with('success',' Currency deleted!');
     }
 }
