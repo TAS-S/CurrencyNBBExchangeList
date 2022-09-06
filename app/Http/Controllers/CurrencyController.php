@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CurrencyController extends Controller
 {
@@ -13,7 +15,9 @@ class CurrencyController extends Controller
      */
     public function index()
     {
-        //
+        $currency = User::find(Auth::user()->id)->currencies()->get();;
+
+        return view('currency.index', compact('currency'));
     }
 
     /**
